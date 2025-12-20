@@ -1,0 +1,6 @@
+"# Main entry point for AI Trading Bot" 
+"from enterprise.engine import EnterpriseTradingEngine" 
+"" 
+"if __name__ == '__main__':" 
+"    engine = EnterpriseTradingEngine()" 
+"    engine.run()" 
