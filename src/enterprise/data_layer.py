@@ -30,51 +30,132 @@ class DataLayer:
     def initialize_exchanges(self):
         """Initialize connections to supported exchanges"""
         try:
-            # Gemini
-            if self.config.get('gemini_api_key'):
-                self.exchanges['gemini'] = ccxt.gemini({
-                    'apiKey': self.config.get('gemini_api_key'),
-                    'secret': self.config.get('gemini_api_secret'),
-                    'enableRateLimit': True,
-                })
-                self.logger.info("Gemini exchange initialized")
+            self.logger.info("Initializing exchanges...")
             
-            # Coinbase Pro
+            # Check for exchanges in config
+            exchanges_config = self.config.get('exchanges', {})
+            
+            # Initialize Gemini if enabled
+            gemini_config = exchanges_config.get('gemini', {})
+            if gemini_config.get('enabled', False):
+                api_key = gemini_config.get('api_key')
+                api_secret = gemini_config.get('api_secret')
+                
+                # Also check direct environment variables
+                if not api_key:
+                    api_key = self.config.get('GEMINI_API_KEY')
+                if not api_secret:
+                    api_secret = self.config.get('GEMINI_API_SECRET')
+                
+                if api_key and api_secret:
+                    self.exchanges['gemini'] = ccxt.gemini({
+                        'apiKey': api_key,
+                        'secret': api_secret,
+                        'enableRateLimit': True,
+                    })
+                    self.active_exchange = 'gemini'
+                    self.logger.info("✅ Gemini exchange initialized")
+                else:
+                    self.logger.warning("Gemini enabled but no API keys found")
+            
+            # Initialize Coinbase if enabled
+            coinbase_config = exchanges_config.get('coinbase', {})
+            if coinbase_config.get('enabled', False):
+                api_key = coinbase_config.get('api_key') or self.config.get('COINBASE_API_KEY')
+                api_secret = coinbase_config.get('api_secret') or self.config.get('COINBASE_API_SECRET')
+                
+                if api_key and api_secret:
+                    self.exchanges['coinbase'] = ccxt.coinbase({
+                        'apiKey': api_key,
+                        'secret': api_secret,
+                        'enableRateLimit': True,
+                    })
+                    self.logger.info("Coinbase exchange initialized")
+            
+            # Fallback to mock if no exchanges initialized
+            if not self.exchanges:
+                if exchanges_config.get('mock', {}).get('enabled', True):
+                    self.exchanges['mock'] = 'mock'
+                    self.active_exchange = 'mock'
+                    self.logger.info("📝 Using mock exchange")
+            
+            self.logger.info(f"Total exchanges: {len(self.exchanges)}")
+            
+        except Exception as e:
+            self.logger.error(f"Failed to initialize exchanges: {e}")
+            self.exchanges['mock'] = 'mock'
+            self.active_exchange = 'mock'
+            
+            # Coinbase Advanced Trade (PRODUCTION ONLY - no testnet)
             if self.config.get('coinbase_api_key'):
-                self.exchanges['coinbase'] = ccxt.coinbasepro({
+                self.exchanges['coinbase'] = ccxt.coinbase({
                     'apiKey': self.config.get('coinbase_api_key'),
                     'secret': self.config.get('coinbase_api_secret'),
-                    'password': self.config.get('coinbase_api_passphrase', ''),
                     'enableRateLimit': True,
+                    # Coinbase Advanced Trade specific
+                    'options': {
+                        'fetchMarkets': ['spot'],  # Only spot markets
+                    }
                 })
-                self.logger.info("Coinbase Pro exchange initialized")
+                self.logger.info("Coinbase Advanced Trade initialized (PRODUCTION)")
+                self.logger.warning("⚠️ Coinbase has no testnet - use with caution!")
             
-            # Binance (for additional liquidity)
+            # Binance (with testnet option)
             if self.config.get('binance_api_key'):
-                self.exchanges['binance'] = ccxt.binance({
+                config = {
                     'apiKey': self.config.get('binance_api_key'),
                     'secret': self.config.get('binance_api_secret'),
                     'enableRateLimit': True,
-                })
-                self.logger.info("Binance exchange initialized")
+                }
                 
+                # Binance testnet for development
+                if self.config.get('binance_testnet', True):
+                    config.setdefault('urls', {})['api'] = {
+                        'public': 'https://testnet.binance.vision/api',
+                        'private': 'https://testnet.binance.vision/api',
+                    }
+                    self.logger.info("Binance Testnet initialized")
+                else:
+                    self.logger.info("Binance Production initialized")
+                
+                self.exchanges['binance'] = ccxt.binance(config)
+            
+            # Kraken (alternative for testing)
+            if self.config.get('kraken_api_key'):
+                self.exchanges['kraken'] = ccxt.kraken({
+                    'apiKey': self.config.get('kraken_api_key'),
+                    'secret': self.config.get('kraken_private_key'),
+                    'enableRateLimit': True,
+                })
+                self.logger.info("Kraken exchange initialized")
+            
+            # CCXT built-in test exchange (for pure development)
+            if self.config.get('use_ccxt_test', False):
+                self.exchanges['test'] = ccxt.test()
+                self.logger.info("CCXT Test Exchange initialized - for development only")
+                    
+            self.logger.info(f"Total exchanges initialized: {len(self.exchanges)}")
+            
         except Exception as e:
             self.logger.error(f"Failed to initialize exchanges: {e}")
     
-    def get_market_data(self, symbol: str, exchange: str = 'gemini', 
+    def get_market_data(self, symbol: str, exchange: Optional[str] = None, 
                        timeframe: str = '1m', limit: int = 100) -> pd.DataFrame:
         """
         Fetch OHLCV data from exchange
         
         Args:
             symbol: Trading pair (e.g., 'BTC/USD')
-            exchange: Exchange name
+            exchange: Exchange name (optional, uses active exchange)
             timeframe: Timeframe for candles
             limit: Number of candles to fetch
             
         Returns:
             DataFrame with OHLCV data
         """
+        if not exchange:
+            exchange = self.active_exchange
+        
         cache_key = f"{exchange}:{symbol}:{timeframe}:{limit}"
         
         # Check cache
@@ -84,12 +165,15 @@ class DataLayer:
                 return cached_data.copy()
         
         try:
-            if exchange not in self.exchanges:
-                raise ValueError(f"Exchange {exchange} not initialized")
+            exchange_obj = self.exchanges.get(exchange)
             
-            exchange_obj = self.exchanges[exchange]
+            if exchange_obj == 'mock' or not exchange_obj:
+                # Use mock data
+                self.logger.debug(f"Using mock data for {symbol}")
+                return self._get_mock_market_data(symbol, limit)
             
-            # Fetch OHLCV data
+            # Fetch from real exchange
+            self.logger.debug(f"Fetching {limit} {timeframe} candles for {symbol} from {exchange}")
             ohlcv = exchange_obj.fetch_ohlcv(symbol, timeframe, limit=limit)
             
             # Convert to DataFrame
@@ -97,18 +181,20 @@ class DataLayer:
             df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
             df.set_index('timestamp', inplace=True)
             
-            # Add technical indicators
-            df = self.add_technical_indicators(df)
+            # Add technical indicators if we have enough data
+            if len(df) > 20:
+                df = self.add_technical_indicators(df)
             
             # Update cache
             self.market_cache[cache_key] = (time.time(), df.copy())
             
+            self.logger.debug(f"Fetched {len(df)} candles from {exchange}")
             return df
             
         except Exception as e:
-            self.logger.error(f"Error fetching market data: {e}")
-            # Return empty DataFrame with correct structure
-            return pd.DataFrame(columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+            self.logger.error(f"Error fetching market data from {exchange}: {e}")
+            # Fallback to mock data
+            return self._get_mock_market_data(symbol, limit)
     
     def add_technical_indicators(self, df: pd.DataFrame) -> pd.DataFrame:
         """Add basic technical indicators to DataFrame"""

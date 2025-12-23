@@ -1,0 +1,35 @@
+# Exchange Configuration
+exchanges:
+  gemini:
+    api_key: "${GEMINI_API_KEY}"  # Use environment variables
+    api_secret: "${GEMINI_API_SECRET}"
+    sandbox: true
+    enable_rate_limit: true
+    timeout: 30000
+    verbose: false
+    rate_limit: true
+    
+  coinbase:
+    api_key: "${COINBASE_API_KEY}"
+    api_secret: "${COINBASE_API_SECRET}"
+    sandbox: true
+    enable_rate_limit: true
+    timeout: 30000
+    verbose: false
+
+# Default settings for all exchanges
+defaults:
+  enable_rate_limit: true
+  timeout: 30000
+  sandbox: true  # Paper trading by default
+  verbose: false
+
+# Environment overrides
+environments:
+  development:
+    sandbox: true
+    verbose: true
+    
+  production:
+    sandbox: false
+    verbose: false

@@ -1,0 +1,55 @@
+# AI Engine Configuration
+models:
+  strategy_predictor:
+    type: "random_forest"
+    n_estimators: 100
+    max_depth: 10
+    random_state: 42
+    
+  regime_classifier:
+    type: "random_forest"
+    n_estimators: 50
+    max_depth: 8
+    random_state: 42
+    
+  profitability_predictor:
+    type: "gradient_boosting"
+    n_estimators: 100
+    max_depth: 7
+    learning_rate: 0.1
+    random_state: 42
+
+learning:
+  retrain_interval: 50
+  min_samples: 20
+  validation_split: 0.2
+  save_interval: 100
+  batch_size: 32
+  
+strategies:
+  quantitative_momentum:
+    weight: 0.25
+    min_confidence: 0.6
+    
+  statistical_arbitrage:
+    weight: 0.20
+    min_confidence: 0.65
+    
+  market_making:
+    weight: 0.20
+    min_confidence: 0.7
+    
+  ml_trend_prediction:
+    weight: 0.20
+    min_confidence: 0.55
+    
+  volatility_breakout:
+    weight: 0.15
+    min_confidence: 0.6
+
+features:
+  technical_indicators: true
+  price_action: true
+  volume_analysis: true
+  market_sentiment: false
+  feature_scaling: true

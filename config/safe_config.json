@@ -1,0 +1,28 @@
+{
+  "mode": "demo",
+  "exchange": "gemini",
+  "api_key": "YOUR_API_KEY_HERE",
+  "api_secret": "YOUR_API_SECRET_HERE",
+  "symbols": [
+    "BTC/USD",
+    "ETH/USD",
+    "SOL/USD"
+  ],
+  "total_portfolio_usd": 500,
+  "auto_fetch_balance": false,
+  "risk_per_trade_pct": 1.0,
+  "max_position_size_pct": 5.0,
+  "max_position_size_usd": 25,
+  "stop_loss_pct": 2.0,
+  "take_profit_pct": 4.0,
+  "max_daily_loss_pct": 2.0,
+  "max_total_loss_pct": 10.0,
+  "emergency_stop_threshold": -5.0,
+  "max_open_positions": 2,
+  "min_balance_usd": 50,
+  "cooldown_after_loss_seconds": 600,
+  "enable_redis": true,
+  "health_check_interval": 30,
+  "balance_check_interval": 60,
+  "log_level": "INFO"
+}

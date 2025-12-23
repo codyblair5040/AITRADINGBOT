@@ -1,0 +1,34 @@
+# Trading Configuration
+trading:
+  mode: "paper"  # paper, live, backtest
+  symbols:
+    - "BTC/USD"
+    - "ETH/USD" 
+    - "SOL/USD"
+    - "ADA/USD"
+    - "DOT/USD"
+    - "MATIC/USD"
+    - "AVAX/USD"
+    - "LINK/USD"
+    - "UNI/USD"
+    - "XRP/USD"
+  default_symbol: "BTC/USD"
+  timeframe: "1m"  # 1m, 5m, 15m, 1h, 4h, 1d
+  max_open_trades: 3
+  risk_per_trade: 0.01
+  stop_loss_percent: 2.0
+  take_profit_percent: 3.0
+  update_interval: 30
+  
+paper_trading:
+  initial_balance: 10000.00
+  simulate_fees: true
+  fee_rate: 0.001  # 0.1%
+  slippage: 0.0005  # 0.05%
+  enabled: true
+  
+live_trading:
+  max_open_orders: 5
+  order_timeout: 30
+  confirm_order: false
+  enabled: false

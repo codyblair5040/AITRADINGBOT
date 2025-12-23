@@ -1,0 +1,21 @@
+﻿# AI Engine Configuration
+models:
+  strategy_predictor:
+    type: "random_forest"
+    n_estimators: 100
+    max_depth: 10
+  regime_classifier:
+    type: "random_forest"
+    n_estimators: 50
+    max_depth: 8
+  profitability_predictor:
+    type: "gradient_boosting"
+    n_estimators: 100
+    max_depth: 7
+    learning_rate: 0.1
+
+learning:
+  retrain_interval: 50
+  min_samples: 20
+  validation_split: 0.2
+  save_interval: 100

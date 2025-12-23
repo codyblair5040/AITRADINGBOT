@@ -1,0 +1,49 @@
+ai:
+  confidence_threshold: 0.75
+  model_path: models/
+  retrain_interval: 3600
+development:
+  debug_mode: true
+  log_level: INFO
+  use_real_data: true
+exchanges:
+  coinbase:
+    api_key: ''
+    api_secret: ''
+    enabled: false
+  gemini:
+    api_key: ''
+    api_secret: ''
+    enabled: true
+    sandbox: false
+  mock:
+    enabled: false
+monitoring:
+  dashboard_port: 8000
+  enabled: true
+risk:
+  daily_loss_limit: 0.05
+  max_drawdown: 0.2
+  position_size_limit: 0.1
+trading:
+  symbols:
+    - BTC/USD
+    - ETH/USD
+    - SOL/USD
+    - ADA/USD
+    - DOT/USD
+    - MATIC/USD
+    - AVAX/USD
+    - LINK/USD
+    - UNI/USD
+    - XRP/USD
+  default_symbol: BTC/USD
+  max_open_trades: 3
+  mode: paper
+  paper_balance: 10000
+  paper_trading: true
+  risk_per_trade: 0.01
+  simulate_execution: true
+  stop_loss_percent: 2.0
+  take_profit_percent: 3.0
+  update_interval: 30

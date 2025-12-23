@@ -1,0 +1,48 @@
+# General System Configuration
+logging:
+  level: "INFO"
+  file: "logs/trading_bot.log"
+  max_size_mb: 10
+  backup_count: 5
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+performance:
+  tracking_enabled: true
+  save_interval: 10
+  report_format: "json"
+  metrics:
+    - "sharpe_ratio"
+    - "max_drawdown"
+    - "win_rate"
+    - "profit_factor"
+    - "total_return"
+    
+system:
+  check_interval: 60
+  health_check: true
+  auto_restart: false
+  memory_limit_mb: 1024
+  cpu_warning_threshold: 80
+  
+notifications:
+  enabled: false
+  telegram:
+    bot_token: "${TELEGRAM_BOT_TOKEN}"
+    chat_id: "${TELEGRAM_CHAT_ID}"
+  email:
+    smtp_server: "${EMAIL_SMTP_SERVER}"
+    username: "${EMAIL_USERNAME}"
+    password: "${EMAIL_PASSWORD}"
+    recipients: []
+    
+data:
+  save_trades: true
+  save_market_data: false
+  data_retention_days: 30
+  compression: true
+  
+backup:
+  enabled: true
+  interval_hours: 24
+  keep_backups: 7
+  backup_dir: "backups/"

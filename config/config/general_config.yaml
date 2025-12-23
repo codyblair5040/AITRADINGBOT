@@ -1,0 +1,21 @@
+﻿# General System Configuration
+logging:
+  level: "INFO"
+  file: "logs/trading_bot.log"
+  max_size_mb: 10
+  backup_count: 5
+
+performance:
+  tracking_enabled: true
+  save_interval: 10
+  report_format: "json"
+  metrics:
+    - "sharpe_ratio"
+    - "max_drawdown"
+    - "win_rate"
+
+system:
+  check_interval: 60
+  health_check: true
+  auto_restart: false
+  memory_limit_mb: 1024

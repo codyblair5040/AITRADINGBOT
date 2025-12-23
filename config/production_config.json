@@ -1,0 +1,347 @@
+{
+  "name": "Enterprise Trading Bot",
+  "version": "3.0.0",
+  "environment": "production",
+
+  "ai_engine": {
+    "continuous_learning": {
+      "enabled": true,
+      "model_dir": "models/continuous_learning",
+      "retrain_after_trades": 50,
+      "save_models": true,
+      "min_training_samples": 20,
+      "max_training_samples": 10000,
+      "feature_scaling": true,
+      "auto_weight_adjustment": true
+    },
+    "strategies": {
+      "quantitative_momentum": 0.25,
+      "statistical_arbitrage": 0.20,
+      "market_making": 0.20,
+      "ml_trend_prediction": 0.20,
+      "volatility_breakout": 0.15
+    },
+    "stop_loss": {
+      "base_stop_pct": 2.0,
+      "trailing_enabled": true,
+      "volatility_adjusted": true,
+      "strategy_specific": {
+        "momentum": 1.5,
+        "breakout": 2.0,
+        "arbitrage": 1.0,
+        "market_making": 0.5
+      },
+      "min_stop_pct": 0.5,
+      "max_stop_pct": 10.0,
+      "update_interval_seconds": 30,
+      "breakeven_activation_pct": 1.0
+    },
+    "take_profit": {
+      "levels": 3,
+      "risk_reward_ratio": 2.0,
+      "dynamic_based_on_volatility": true,
+      "partial_take_profit": true,
+      "tp1_close_pct": 25,
+      "tp2_close_pct": 50,
+      "tp3_trailing": true,
+      "minimum_profit_pct": 0.5
+    },
+    "market_regime_detection": {
+      "enabled": true,
+      "regimes": ["BULLISH", "BEARISH", "NEUTRAL", "VOLATILE", "HIGH_VOLUME"],
+      "update_interval_minutes": 5,
+      "minimum_data_points": 50
+    },
+    "ensemble_voting": {
+      "enabled": true,
+      "minimum_confidence": 0.6,
+      "minimum_weight_difference": 0.2,
+      "veto_enabled": true,
+      "veto_threshold": 0.3
+    }
+  },
+
+  "risk_management": {
+    "daily_loss_limit_pct": 5.0,
+    "max_portfolio_risk_pct": 20.0,
+    "position_sizing": {
+      "kelly_criterion_enabled": true,
+      "max_position_pct": 2.0,
+      "min_position_pct": 0.1,
+      "confidence_weighted": true
+    },
+    "max_open_positions": 5,
+    "cooldown_period_minutes": 5,
+    "correlation_limits": {
+      "max_correlated_pairs": 3,
+      "correlation_threshold": 0.7
+    },
+    "emergency_stop": {
+      "enabled": true,
+      "daily_loss_threshold_pct": 10.0,
+      "weekly_loss_threshold_pct": 20.0,
+      "position_count_threshold": 10
+    },
+    "gemini_specific": {
+      "maker_fee": 0.0010,
+      "taker_fee": 0.0035,
+      "min_order_size_usd": 1.00,
+      "sandbox_mode": false
+    }
+  },
+
+  "trading": {
+    "symbols": ["BTC/USD", "ETH/USD", "SOL/USD", "ADA/USD", "MATIC/USD", "LINK/USD", "UNI/USD", "AAVE/USD", "CRV/USD", "REN/USD"],
+    "interval_seconds": 60,
+    "max_trades_per_day": 50,
+    "paper_trading": false,
+    "backtesting": {
+      "enabled": false,
+      "start_date": "2024-01-01",
+      "end_date": "2024-12-31",
+      "initial_balance": 10000
+    },
+    "order_types": {
+      "default": "limit",
+      "high_confidence_limit": 0.8,
+      "slippage_tolerance_pct": 0.1,
+      "time_in_force": "GTC",
+      "gemini_order_options": ["immediate-or-cancel", "maker-or-cancel"]
+    },
+    "market_hours": {
+      "trade_24_7": true,
+      "peak_hours_only": false,
+      "peak_hours_start": 9,
+      "peak_hours_end": 17
+    }
+  },
+
+  "exchanges": {
+    "primary": {
+      "name": "gemini",
+      "api_key_env": "GEMINI_API_KEY",
+      "api_secret_env": "GEMINI_API_SECRET",
+      "sandbox": false,
+      "sandbox_api_key_env": "GEMINI_SANDBOX_API_KEY",
+      "sandbox_api_secret_env": "GEMINI_SANDBOX_API_SECRET",
+      "rate_limit_ms": 1000,
+      "websocket_enabled": true,
+      "features": {
+        "margin_trading": false,
+        "futures_trading": false,
+        "staking": false,
+        "withdrawal_enabled": false
+      },
+      "urls": {
+        "rest": "https://api.gemini.com",
+        "sandbox": "https://api.sandbox.gemini.com",
+        "websocket": "wss://api.gemini.com/v1/marketdata"
+      }
+    },
+    "secondary": {
+      "name": "coinbase",
+      "api_key_env": "COINBASE_API_KEY",
+      "api_secret_env": "COINBASE_API_SECRET",
+      "passphrase_env": "COINBASE_PASSPHRASE",
+      "enabled": true,
+      "rate_limit_ms": 500,
+      "use_for_data": true,
+      "use_for_execution": false,
+      "features": {
+        "advanced_trade": true,
+        "staking": true,
+        "earn": false
+      },
+      "urls": {
+        "rest": "https://api.coinbase.com",
+        "advanced_trade": "https://api.coinbase.com/api/v3/brokerage"
+      }
+    },
+    "arbitrage": {
+      "enabled": false,
+      "min_profit_pct": 0.5,
+      "check_interval_seconds": 10
+    },
+    "failover": {
+      "enabled": true,
+      "switch_on_error_count": 3,
+      "cooldown_minutes": 5
+    }
+  },
+
+  "gemini_specific": {
+    "trading_pairs": {
+      "btcusd": "BTCUSD",
+      "ethusd": "ETHUSD",
+      "solusd": "SOLUSD",
+      "adausd": "ADAUSD",
+      "maticusd": "MATICUSD"
+    },
+    "order_minimums": {
+      "BTC": 0.00001,
+      "ETH": 0.0001,
+      "SOL": 0.01,
+      "ADA": 1.0,
+      "MATIC": 1.0
+    },
+    "fee_structure": {
+      "maker": "0.0010",
+      "taker": "0.0035",
+      "volume_tier_1": 0.0010,
+      "volume_tier_2": 0.0008,
+      "volume_tier_3": 0.0006
+    },
+    "api_limits": {
+      "private_requests_per_minute": 600,
+      "public_requests_per_minute": 1200,
+      "orderbook_levels": 50
+    }
+  },
+
+  "monitoring": {
+    "logging": {
+      "level": "INFO",
+      "file": "logs/enterprise_bot.log",
+      "max_size_mb": 100,
+      "backup_count": 5,
+      "gemini_logs": true,
+      "coinbase_logs": true
+    },
+    "metrics": {
+      "collect_interval_minutes": 5,
+      "export_to_csv": true,
+      "csv_directory": "data/metrics",
+      "performance_dashboard": true,
+      "exchange_metrics": true
+    },
+    "alerts": {
+      "telegram": {
+        "enabled": false,
+        "bot_token_env": "TELEGRAM_BOT_TOKEN",
+        "chat_id_env": "TELEGRAM_CHAT_ID"
+      },
+      "email": {
+        "enabled": false,
+        "smtp_server": "smtp.gmail.com",
+        "smtp_port": 587,
+        "email_env": "ALERT_EMAIL",
+        "password_env": "EMAIL_PASSWORD"
+      },
+      "conditions": {
+        "daily_loss_pct": 3.0,
+        "large_trade_pct": 5.0,
+        "strategy_failure_count": 5,
+        "exchange_disconnect": true,
+        "gemini_maintenance": true,
+        "coinbase_outage": true
+      }
+    },
+    "health_checks": {
+      "interval_minutes": 1,
+      "max_memory_mb": 1024,
+      "max_cpu_pct": 80,
+      "restart_on_failure": true,
+      "check_exchange_connectivity": true
+    }
+  },
+
+  "data": {
+    "storage": {
+      "historical_data_days": 365,
+      "tick_data": false,
+      "compress_old_data": true,
+      "backup_to_cloud": false
+    },
+    "sources": {
+      "primary": "gemini_api",
+      "secondary": ["coinbase_api", "ccxt"],
+      "real_time": true,
+      "update_interval_seconds": 30
+    },
+    "features": {
+      "technical_indicators": true,
+      "market_sentiment": false,
+      "news_analysis": false,
+      "social_media": false,
+      "gemini_auction_data": true
+    }
+  },
+
+  "performance": {
+    "targets": {
+      "daily_return_pct": 0.5,
+      "monthly_return_pct": 10.0,
+      "sharpe_ratio_target": 2.0,
+      "max_drawdown_pct": 15.0,
+      "win_rate_target": 60.0
+    },
+    "reporting": {
+      "daily_report": true,
+      "weekly_summary": true,
+      "monthly_analysis": true,
+      "generate_charts": true
+    },
+    "optimization": {
+      "auto_optimize": true,
+      "optimize_interval_days": 7,
+      "parameter_ranges": {
+        "stop_loss_pct": [0.5, 5.0],
+        "take_profit_pct": [1.0, 10.0],
+        "position_size_pct": [0.1, 5.0]
+      }
+    }
+  },
+
+  "security": {
+    "api_keys": {
+      "encrypted_storage": true,
+      "rotation_days": 30,
+      "ip_whitelist": [],
+      "gemini_permissions": ["trader"],
+      "coinbase_permissions": ["view", "trade"]
+    },
+    "network": {
+      "proxy_enabled": false,
+      "vpn_required": false,
+      "rate_limiting": true,
+      "gemini_whitelist_only": true
+    },
+    "data": {
+      "encrypt_logs": false,
+      "anonymize_trades": true,
+      "gdpr_compliant": true
+    }
+  },
+
+  "maintenance": {
+    "auto_restart": {
+      "enabled": true,
+      "schedule": "0 3 * * *",
+      "max_uptime_hours": 168
+    },
+    "cleanup": {
+      "old_logs_days": 30,
+      "old_data_days": 90,
+      "compress_old_files": true
+    },
+    "updates": {
+      "auto_check": true,
+      "check_interval_hours": 24,
+      "notify_on_update": true
+    },
+    "gemini_maintenance_windows": {
+      "check_enabled": true,
+      "notify_before_hours": 24
+    }
+  },
+
+  "debug": {
+    "enabled": false,
+    "log_raw_signals": false,
+    "log_market_data": false,
+    "simulate_orders": false,
+    "slow_mode": false,
+    "gemini_sandbox": false,
+    "coinbase_sandbox": false
+  }
+}
