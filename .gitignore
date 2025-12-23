@@ -1,0 +1,116 @@
+# Configuration files
+.env
+.env.local
+.env.backup
+.env.example
+config.local.yaml
+*.local.yaml
+secrets/
+*/venv/
+venv/
+
+# Egg-info files (from Python packaging)
+*.egg-info/
+*.egg
+
+# Byte-compiled Python files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Sensitive/security files
+config/secrets/
+coinbase_key.pem
+*.pem
+*.key
+
+# ===== NEW ADDITIONS =====
+
+# Backup directories (CRITICAL - prevents all backup_ folders)
+backup_*/
+
+# Debug/test/one-off scripts (CRITICAL - prevents all fix/test scripts)
+FIX_*
+TEST_*
+debug_*
+check_*
+*_CHECK.py
+*_DIAGNOSTIC.py
+*_UPDATE.py
+quick_*.py
+verify_*.py
+examine_*.py
+MONITOR_*.py
+SAFETY_*.py
+EXACT_*.py
+FINAL_*.py
+LIVE_*.py
+MIGRATION.md
+DEVELOPMENT.md
+clean_*.py
+compare_*.py
+create_*.py
+deploy_*.py
+direct_*.py
+enable_*.py
+find_*.py
+install_*.py
+profitable_*.py
+redis_*.py
+remove_*.py
+reorganize_*.py
+replace_*.py
+run_*.py
+safe_*.py
+setup_*.py
+simple_*.py
+update_*.py
+upgrade_*.py
+
+# Runtime/session data
+logs/
+*.log
+state/
+trading_session_*.json
+engine_state.json
+
+# Temporary/backup files
+*.backup
+*.bak
+*.tmp
+*.temp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Windows files
+$RECYCLE.BIN/
+
+# Specific clutter files to exclude
+0}'
+SAFETY_CERTIFICATE.*
+LIVE_CHECKLIST.*
+docker-compose.prod.yml
+install_enhanced.sh
+run_all_pairs.bat
+
+# Large model files (uncomment if you want to exclude)
+# models/
+# *.pkl
+
+# Docker (optional)
+docker-compose.override.yml
